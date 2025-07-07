@@ -57,3 +57,5 @@ snapshots
 .content-collections
 
 *.local.md
+.env*
+!.env.example
