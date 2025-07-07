@@ -2,7 +2,7 @@ databases:
   - name: typebot-db
     databaseName: typebot
     user: typebot
-    plan: starter
+    plan: free
 
 services:
   - type: web
