@@ -48,12 +48,16 @@ services:
     image: baptistearno/typebot-builder:latest
     ports:
       - "8080:3000"
+    env_file:
+      - .env
 
   typebot-viewer:
     <<: *typebot-common
     image: baptistearno/typebot-viewer:latest
     ports:
       - "8081:3000"
+    env_file:
+      - .env
 
 networks:
   typebot-network:
