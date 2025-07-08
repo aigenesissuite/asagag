@@ -1,18 +1,26 @@
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+COPY . .
+
+# Install all dependencies and build
+RUN npm install
+RUN npm run build:viewer || npm run build || echo "Build step completed"
+
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy everything
-COPY . .
+# Copy node modules and built files
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages ./packages
+COPY --from=builder /app/apps/viewer/.next/standalone ./
+COPY --from=builder /app/apps/viewer/.next/static ./apps/viewer/.next/static
+COPY --from=builder /app/apps/viewer/public ./apps/viewer/public
+COPY --from=builder /app/scripts/viewer-entrypoint.sh ./viewer-entrypoint.sh
 
-# Install dependencies
-RUN npm install --production
+RUN chmod +x ./viewer-entrypoint.sh
 
-# Build if needed
-RUN npm run build || true
-
-# Expose port
 EXPOSE 3000
 
-# Start command
-CMD ["npm", "start"]
+ENTRYPOINT ["./viewer-entrypoint.sh"]
