@@ -1,7 +1,14 @@
-#!/bin/bash
+#!/bin/sh
+set -e
 
-cd apps/viewer;
-node  -e "const { configureRuntimeEnv } = require('next-runtime-env/build/configure'); configureRuntimeEnv();"
-cd ../..;
+echo "Starting Typebot Viewer..."
 
-NODE_OPTIONS=--no-node-snapshot HOSTNAME=${HOSTNAME:-0.0.0.0} PORT=${PORT:-3000} node apps/viewer/server.js;
+# Database migrations
+if [ "$SKIP_MIGRATIONS" != "true" ]; then
+  echo "Running database migrations..."
+  ./node_modules/.bin/prisma migrate deploy --schema=packages/prisma/postgresql/schema.prisma || true
+fi
+
+# Start the viewer
+cd apps/viewer
+exec node server.js
