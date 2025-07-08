@@ -5,7 +5,7 @@ WORKDIR /app
 # Copy monorepo files
 COPY turbo.json ./
 COPY package.json ./
-COPY bun.lockb ./
+COPY bun.lock ./
 
 # Copy workspace directories
 COPY apps ./apps
@@ -29,6 +29,10 @@ COPY --from=0 /app/apps/viewer/.next/standalone ./
 COPY --from=0 /app/apps/viewer/.next/static ./apps/viewer/.next/static
 COPY --from=0 /app/apps/viewer/public ./apps/viewer/public
 
+# Copy package files for dotenv
+COPY --from=0 /app/package.json ./
+COPY --from=0 /app/node_modules ./node_modules
+
 EXPOSE 3000
 
-CMD ["node", "apps/viewer/server.js"]
+CMD ["npm", "run", "start", "--prefix", "apps/viewer"]
