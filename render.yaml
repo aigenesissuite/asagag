@@ -28,19 +28,11 @@ services:
 - type: web
     name: typebot-complete
     env: docker
-    dockerfilePath: ./Dockerfile
-    dockerCommand: ""
-    buildCommand: "docker build --build-arg SCOPE=viewer -f Dockerfile ."
+    dockerfilePath: ./Dockerfile.viewer
     envVars:
       - fromGroup: typebot-shared
       - key: PORT
         value: "3000"
-      - key: NODE_ENV
-        value: production
-      - key: SKIP_MIGRATIONS
-        value: "true"
-      - key: DATABASE_URL
-        value: postgresql://postgres:postgres@localhost:5432/typebot
       - key: S3_ACCESS_KEY
         sync: false
       - key: S3_SECRET_KEY

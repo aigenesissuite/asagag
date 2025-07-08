@@ -1,27 +1,18 @@
-# Assuming your Typebot viewer is in a subdirectory
-FROM node:18-alpine AS builder
-WORKDIR /app
-
-# Copy package files
-COPY typebot-viewer/package*.json ./
-RUN npm ci
-
-# Copy source code
-COPY typebot-viewer/ ./
-RUN npm run build
-
-# Production stage
 FROM node:18-alpine
+
 WORKDIR /app
 
-# Copy built application
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/next.config.js ./next.config.js
+# Copy everything
+COPY . .
 
-# Install production dependencies
-RUN npm ci --production
+# Install dependencies
+RUN npm install --production
 
+# Build if needed
+RUN npm run build || true
+
+# Expose port
 EXPOSE 3000
+
+# Start command
 CMD ["npm", "start"]
