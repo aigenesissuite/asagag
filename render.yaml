@@ -27,7 +27,7 @@ services:
 
   - type: web
     name: typebot-complete
-    runtime: docker
+    env: docker
     dockerfilePath: ./Dockerfile
     envVars:
       - fromGroup: typebot-shared
