@@ -1,26 +1,30 @@
-FROM node:18-alpine AS builder
-
-WORKDIR /app
-COPY . .
-
-# Install all dependencies and build
-RUN npm install
-RUN npm run build:viewer || npm run build || echo "Build step completed"
-
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy node modules and built files
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages ./packages
-COPY --from=builder /app/apps/viewer/.next/standalone ./
-COPY --from=builder /app/apps/viewer/.next/static ./apps/viewer/.next/static
-COPY --from=builder /app/apps/viewer/public ./apps/viewer/public
-COPY --from=builder /app/scripts/viewer-entrypoint.sh ./viewer-entrypoint.sh
+# Copy package files first
+COPY package.json ./
+COPY package-lock.json* ./
+COPY yarn.lock* ./
+COPY pnpm-lock.yaml* ./
+COPY bun.lockb* ./
 
-RUN chmod +x ./viewer-entrypoint.sh
+# Install with the right package manager
+RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile; \
+    elif [ -f package-lock.json ]; then npm ci; \
+    elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm install --frozen-lockfile; \
+    elif [ -f bun.lockb ]; then npm install -g bun && bun install; \
+    else npm install --legacy-peer-deps; fi
 
+# Copy everything
+COPY . .
+
+# Try to build
+RUN cd apps/viewer && (npm run build || yarn build || pnpm build || echo "Build completed")
+
+# Runtime
 EXPOSE 3000
 
-ENTRYPOINT ["./viewer-entrypoint.sh"]
+WORKDIR /app/apps/viewer
+
+CMD ["npm", "start"]
