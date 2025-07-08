@@ -28,11 +28,20 @@ services:
   - type: web
     name: typebot-complete
     env: docker
-    dockerfilePath: ./Dockerfile.viewer
+    image: baptistearno/typebot-viewer:latest
     envVars:
-      - fromGroup: typebot-shared
       - key: PORT
         value: "3000"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: companion-db
+          property: connectionString
+      - key: NEXT_PUBLIC_VIEWER_URL
+        value: https://typebot-complete.onrender.com
+      - key: NEXTAUTH_URL
+        value: https://typebot-complete.onrender.com
+      - key: ENCRYPTION_SECRET
+        generateValue: true
       - key: S3_ACCESS_KEY
         sync: false
       - key: S3_SECRET_KEY
