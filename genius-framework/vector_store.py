@@ -1,15 +1,15 @@
-import os
-from openai import OpenAI
+import os 
+import openai
 from pinecone import Pinecone
 from typing import Dict, List
 import json
 from dotenv import load_dotenv
-
+            
 # Load environment
 load_dotenv()
-
+     
 # Initialize
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+openai.api_key = os.getenv('OPENAI_API_KEY')
 pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
 
 class GeniusVectorStore:
@@ -19,11 +19,11 @@ class GeniusVectorStore:
     
     def embed_text(self, text: str) -> List[float]:
         """Create embedding using OpenAI"""
-        response = client.embeddings.create(
-            model="text-embedding-3-small",
+        response = openai.Embedding.create(
+            model="text-embedding-ada-002",  # Changed to older model
             input=text
         )
-        return response.data[0].embedding
+        return response['data'][0]['embedding']
     
     def add_pattern(self, text: str, metadata: Dict):
         """Add any pattern to vector store"""
@@ -33,7 +33,7 @@ class GeniusVectorStore:
         
         self.index.upsert([(vector_id, embedding, metadata)])
         print(f"✓ Added: [{metadata.get('type', 'general')}] {text[:50]}...")
-        
+    
     def find_patterns(self, query: str, filters: Dict = {}, count: int = 3):
         """Find relevant patterns for any client"""
         query_embedding = self.embed_text(query)
@@ -72,16 +72,16 @@ def test_framework():
         {
             'text': 'Reference what the leaders in their space already do',
             'metadata': {'framework': 'trojan', 'driver': 'authority', 'type': 'pattern'}
-        },
+        }, 
         {
             'text': 'Create urgency by showing the window is closing',
             'metadata': {'framework': 'trojan', 'driver': 'no_escape', 'type': 'pattern'}
         }
     ]
-    
+
     for pattern in framework_patterns:
         store.add_pattern(pattern['text'], pattern['metadata'])
-    
+ 
     print("\n✅ Framework ready for any client!")
     
     # Test query
@@ -90,6 +90,6 @@ def test_framework():
     
     for r in results:
         print(f"- {r['text'][:60]}... (score: {r['score']:.2f})")
-
+            
 if __name__ == "__main__":
     test_framework()
