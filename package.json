@@ -1,7 +1,6 @@
 {
   "name": "root",
   "version": "3.8.0",
-  "packageManager": "bun@1.2.8",
   "packageManager": "bun@1.2.16",
   "private": true,
   "workspaces": [
