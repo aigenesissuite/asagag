@@ -25,7 +25,7 @@ services:
       - key: ALLOWED_ORIGINS
         value: https://websitecompanion.ai,https://app.websitecompanion.ai,https://typebot-complete.onrender.com
 
-- type: web
+  - type: web
     name: typebot-complete
     env: docker
     dockerfilePath: ./Dockerfile.viewer
