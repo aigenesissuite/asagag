@@ -28,7 +28,9 @@ services:
   - type: web
     name: typebot-complete
     env: docker
-    image: baptistearno/typebot-viewer:2.18.3
+    dockerCommand: ""
+    image:
+      url: baptistearno/typebot-viewer:2.18.3
     envVars:
       - key: PORT
         value: "3000"
